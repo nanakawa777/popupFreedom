@@ -20,8 +20,11 @@ similarities = cosine_similarity(queries, sentence_embeddings)
 most_similar_sentence_idx = np.argmax(similarities, )
 score = round(similarities[0][most_similar_sentence_idx], 3)
 # 打印最相似的句子和相对应的相似性
-print(
-    f"与【{sentence}】最相似的句子是【{sentences[most_similar_sentence_idx]}】\n"
-    f"相似性得分为【{score:.3f}】\n"
-    f"规则ID为【{df['id'].iloc[most_similar_sentence_idx]}】"
-)
+if score < 0.950:
+    print("未找到已配置的相似的规则")
+else:
+    print(
+        f"与【{sentence}】最相似的句子是【{sentences[most_similar_sentence_idx]}】\n"
+        f"相似性得分为【{score:.3f}】\n"
+        f"规则ID为【{df['id'].iloc[most_similar_sentence_idx]}】"
+    )
