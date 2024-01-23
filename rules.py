@@ -24,7 +24,7 @@ def run():
         compared_value = chunk.iloc[0, 0]
         for value in chunk["matchkey"].to_list():
             score = fuzz.ratio(value, compared_value)
-            new_record = {'Text1': compared_value, 'Text2': value, 'Score': round(score / 100.0, 3)}
+            new_record = {'Text1': compared_value, 'Text2': value, 'Score': round(score / 100.0, 7)}
             df = df.append(new_record, ignore_index=True)
         break
     df.to_csv('pretrain_data.csv', index=False)
