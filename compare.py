@@ -1,7 +1,7 @@
 import os.path
 
 from sentence_transformers import SentenceTransformer, util
-from sklearn.metrics.pairwise import paired_cosine_distances, cosine_similarity
+from sklearn.metrics.pairwise import cosine_similarity
 import pandas as pd
 import numpy as np
 
