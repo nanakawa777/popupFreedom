@@ -1,24 +1,27 @@
 import os.path
 
-from sentence_transformers import SentenceTransformer, util
-import pandas as pd
 import numpy as np
+import pandas as pd
+from sentence_transformers import SentenceTransformer, util
 
 model = SentenceTransformer('uer/sbert-base-chinese-nli')
-df = pd.read_csv("rules.csv", sep=',', header=0, usecols=["id", "matchkey"], nrows=1000)
+df = pd.read_csv("rules.csv", sep=',', header=0, usecols=["id", "matchkey"])
 sentences = df["matchkey"].to_list()
 if os.path.exists("sentence_embeddings.npy"):
-    sentence_embeddings = np.load("sentence_embeddings.npy")
+    passage_embedding = np.load("sentence_embeddings.npy")
 else:
-    sentence_embeddings = model.encode(sentences, convert_to_tensor=True)
-    np.save("sentence_embeddings.npy", sentence_embeddings)
+    passage_embedding = model.encode(sentences)
+    np.save("sentence_embeddings.npy", passage_embedding)
 
-sentence = """如您已完成申报，可忽略此信息"""
-queries = model.encode([sentence], convert_to_tensor=True)
+sentence = """所属应用：核心征管后端，异常原因：4510097000001001:纳税人在属期（2023-11-01,2023-12-31）内没有定期定额核定信息"""
+query_embedding = model.encode(sentence, )
 
-
+least_feature_scores = 0.93  # 最小特征分数
 # 执行语义搜索
-hits = util.semantic_search(queries, sentence_embeddings)
+hits = util.semantic_search(query_embedding, passage_embedding, top_k=1)
 for hit in hits[0]:
-    print(f'句子: {sentences[hit["corpus_id"]]}, 相似度得分: {hit["score"]:.3f}')
-    break
+    if hit["score"] >= least_feature_scores:
+        print(f'匹配: {sentences[hit["corpus_id"]]}, score: {hit["score"]:.3f}')
+        break
+else:
+    print("No match found")
