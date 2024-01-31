@@ -1,8 +1,15 @@
+import base64
+
+import pandas as pd
 import requests
 
 from compare import semantic_search
 
-url = "http://taxcontroller.yunzhangfang.com/v_rule/pending_json?page=1&limit=20&matchkey="
+SCOPE = {
+    "企业": "1",
+    "地区": "2",
+    "全流程": "00",
+}
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0",
@@ -16,28 +23,61 @@ headers = {
 }
 
 
-def get_pending(dqbm: str):
+def get_pending(dqbm: str = "0"):
     """获取待处理的弹框"""
-    response = requests.get(url, headers=headers, params={"dqbm": dqbm})
+    response = requests.get("http://taxcontroller.yunzhangfang.com/v_rule/pending_json?page=1&limit=20&matchkey=",
+                            headers=headers,
+                            params={"dqbm": dqbm}
+                            )
 
     # status_code attribute returns the HTTP status code that was sent with the response.
-    print("Response Status Code: " + str(response.status_code))
+    # print("Response Status Code: " + str(response.status_code))
 
     # You can use the json() method to get the JSON from the response.
-    print("JSON response: " + str(response.json()))
+    # print("JSON response: " + str(response.json()))
 
     return response.json()
 
 
+def get_publish_rule(rule_id):
+    response = requests.get(
+        url="http://taxcontroller.yunzhangfang.com/v_rule/publishedrule_json?page=1&limit=20&dqbm=0&matchkey=&matchresult=&bxls=&matchscope=",
+        headers=headers,
+        params={"rule_id": rule_id}
+    )
+    return response.json()
+
+
+def push_new_rule(rule: dict):
+    """推送新的规则"""
+    # url = "http://taxcontroller.yunzhangfang.com/v_rule/initial_rule_submit_json"
+    # response = requests.post(url, headers=headers, json=rule)
+    print(rule)
+
+
 def run():
-    pending_jsond = get_pending("34")
+    pending_jsond = get_pending()
     for data in pending_jsond.get("data", []):
         content = data.get("content", "")
+        if content == "":
+            continue
+
         rule_id = semantic_search(content)
         if rule_id:
-            ...
-        else:
-            ...
+            rule = get_publish_rule(rule_id)["data"][0]
+            print(rule)
+            new_rule = {
+                'matchtype': rule['matchtype'],
+                'matchkey': rule['matchkey'],
+                'matchresult': rule['matchresult'],
+                'codematch': rule['codematch'],
+                'initruleid': data["id"],
+                'rulename': rule['name'],
+                'matchscope': SCOPE.get(rule['scope'], "01"),  # 默认为01，具体场景
+                'resulttype': rule['resulttype'],  # 如有需要请替换为相应的取值操作
+                'matchscopevalue': f"{data['dqmc']}-{data['rwlx']}-{data['bslx']}-{data['step']}",
+            }
+            push_new_rule(new_rule)
 
 
 run()

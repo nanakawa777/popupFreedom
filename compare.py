@@ -33,6 +33,6 @@ def semantic_search(sentence: str):
     for hit in hits[0]:
         if hit["score"] >= least_feature_scores:
             print(f'匹配: {sentences[hit["corpus_id"]]}, score: {hit["score"]:.3f}')
-            return df["id"].iloc[sentences[hit["corpus_id"]]]
+            return df["id"].iloc[hit["corpus_id"]]
     else:
         print("No match found")
