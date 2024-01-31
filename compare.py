@@ -34,7 +34,8 @@ def semantic_search(sentence: str):
         if hit["score"] >= least_feature_scores:
             file({
                 "content": sentence,
-                "match": sentences[hit["corpus_id"]],
+                "match_id": df["id"].iloc[hit["corpus_id"]],
+                "match_content": sentences[hit["corpus_id"]],
                 "score": hit["score"]
             })
             return df["id"].iloc[hit["corpus_id"]]
