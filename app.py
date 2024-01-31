@@ -75,7 +75,7 @@ def run():
                 'initruleid': data["id"],
                 'rulename': rule['name'],
                 'matchscope': SCOPE.get(rule['scope'], "01"),  # 默认为01，具体场景
-                'resulttype': rule['resulttype'],  # 如有需要请替换为相应的取值操作
+                'resulttype': rule['resulttype'],
                 'matchscopevalue': f"{data['dqmc']}-{data['rwlx']}-{data['bslx']}-{data['step']}",
             }
             push_new_rule(new_rule)
