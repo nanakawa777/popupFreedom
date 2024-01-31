@@ -24,6 +24,26 @@ headers = {
 }
 
 
+def save_published_rule():
+    """将已上线的规则写入csv文件中"""
+    all_data = []
+    page = 1
+    while True:
+        jsond = get_published_rule_json(page)
+        if not jsond["data"]:
+            break
+        all_data.extend(jsond["data"])
+        page += 1
+    pd.DataFrame(all_data).to_csv("rules.csv", index=False)
+
+
+def get_published_rule_json(page: int) -> dict:
+    """获取已上线的规则"""
+    response = requests.get(
+        f"http://taxcontroller.yunzhangfang.com/v_rule/publishedrule_json?page={page}&limit=1000&dqbm=0&matchkey=&matchresult=&bxls=&matchscope=&rule_id=", )
+    return response.json()
+
+
 def get_pending(dqbm: str = "0", limit: str = "20"):
     """获取待处理的弹框，默认获取全国，前20条"""
     response = requests.get("http://taxcontroller.yunzhangfang.com/v_rule/pending_json?page=1&matchkey=",
