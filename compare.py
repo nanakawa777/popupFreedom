@@ -32,7 +32,15 @@ def semantic_search(sentence: str):
     hits = util.semantic_search(query_embedding, passage_embedding, top_k=1)
     for hit in hits[0]:
         if hit["score"] >= least_feature_scores:
-            print(f'匹配: {sentences[hit["corpus_id"]]}, score: {hit["score"]:.3f}')
+            # print(f'匹配: {sentences[hit["corpus_id"]]}, score: {hit["score"]:.3f}')
+            file({
+                "content": sentence,
+                "match": sentences[hit["corpus_id"]],
+                "score": hit["score"]
+            })
             return df["id"].iloc[hit["corpus_id"]]
-    else:
-        print("No match found")
+
+
+def file(data):
+    """归档比对结果"""
+    pd.DataFrame([data]).to_csv('file.csv', mode='a', header=False, index=False, )

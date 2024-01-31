@@ -52,7 +52,7 @@ def push_new_rule(rule: dict):
     """推送新的规则"""
     # url = "http://taxcontroller.yunzhangfang.com/v_rule/initial_rule_submit_json"
     # response = requests.post(url, headers=headers, json=rule)
-    print(rule)
+    print(f"新增规则：{rule}")
 
 
 def run():
@@ -62,10 +62,11 @@ def run():
         if content == "":
             continue
 
+        print(f"当前处理弹框文本：{content}")
         rule_id = semantic_search(content)
         if rule_id:
             rule = get_publish_rule(rule_id)["data"][0]
-            print(rule)
+            print(f"套用规则：{rule}")
             new_rule = {
                 'matchtype': rule['matchtype'],
                 'matchkey': rule['matchkey'],
