@@ -71,7 +71,7 @@ def run():
                 print(f"套用规则：{rule}")
                 new_rule = {
                     'matchtype': rule['matchtype'],
-                    'matchkey': rule['matchkey'],
+                    'matchkey': content,
                     'matchresult': rule['matchresult'],
                     'codematch': rule['codematch'],
                     'initruleid': data["id"],
